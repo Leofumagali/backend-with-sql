@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id         Int         @id @default(autoincrement())
+  nome       String
+  email      String      @unique
+  senha      String
+  nascimento DateTime
+  inscricoes Inscricao[] @relation("InscricoesDoUsuario")
+}
+
+model Curso {
+  id             String      @id
+  nome           String
+  descricao      String
+  capa           String
+  inicio         DateTime
+  inscricoes     Int
+  inscricoesList Inscricao[] @relation("InscricoesDoCurso")
+}
+
+model Inscricao {
+  id               Int       @id @default(autoincrement())
+  usuario          Usuario   @relation("InscricoesDoUsuario", fields: [usuarioId], references: [id])
+  usuarioId        Int
+  curso            Curso     @relation("InscricoesDoCurso", fields: [cursoId], references: [id])
+  cursoId          String
+  dataInscricao    DateTime
+  dataCancelamento DateTime?
+
+  @@unique([usuarioId, cursoId])
+}
